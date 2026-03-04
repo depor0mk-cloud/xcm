@@ -1,0 +1,5 @@
+{
+  "name": "Name Language Translator",
+  "description": "A translator for the fictional 'Name' language that converts text into unique alphanumeric codes and back.",
+  "requestFramePermissions": []
+}
