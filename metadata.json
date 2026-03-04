@@ -1,5 +1,5 @@
 {
-  "name": "Name Language Translator",
-  "description": "A translator for the fictional 'Name' language that converts text into unique alphanumeric codes and back.",
+  "name": "Переводчик Языка Имя",
+  "description": "Переводчик для вымышленного языка 'Имя', который преобразует текст в уникальные буквенно-цифровые коды и обратно.",
   "requestFramePermissions": []
 }

@@ -113,10 +113,10 @@ export default function App() {
       const url = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
       navigator.clipboard.writeText(url);
       setShareUrl(url);
-      alert('Secure Link Copied! Anyone with this link can decrypt this message.');
+      alert('Защищенная ссылка скопирована! Любой, у кого есть эта ссылка, сможет расшифровать сообщение.');
     } catch (e) {
       console.error(e);
-      alert('Message too large to share via link.');
+      alert('Сообщение слишком большое для передачи через ссылку.');
     }
   };
 
@@ -141,14 +141,23 @@ export default function App() {
               <Terminal className="text-black w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight font-mono uppercase">Cipher: Имя</h1>
-              <p className="text-xs text-gray-500 font-mono uppercase tracking-widest">Secure Translation Protocol</p>
+              <h1 className="text-2xl font-bold tracking-tight font-mono uppercase">Шифр: Имя</h1>
+              <p className="text-xs text-gray-500 font-mono uppercase tracking-widest">Защищенный Протокол Перевода</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
+             <button
+               onClick={() => {
+                 navigator.clipboard.writeText(window.location.href);
+                 alert('Ссылка на приложение скопирована!');
+               }}
+               className="hidden md:flex items-center gap-2 text-xs font-mono text-[#F27D26] hover:text-[#ff9a57] transition-colors uppercase tracking-wider"
+             >
+               <span className="border border-[#F27D26] px-2 py-1 rounded-full">ПОДЕЛИТЬСЯ</span>
+             </button>
              <div className="hidden md:block">
                <span className="text-[10px] font-mono text-[#F27D26] border border-[#F27D26] px-2 py-1 rounded-full animate-pulse">
-                 SYSTEM ONLINE
+                 СИСТЕМА АКТИВНА
                </span>
              </div>
           </div>
@@ -160,7 +169,7 @@ export default function App() {
           {/* Input Section */}
           <div className="flex flex-col gap-2">
             <label className="text-xs font-mono text-gray-500 uppercase tracking-wider flex justify-between">
-              <span>Input // {mode === 'toName' ? 'Russian' : 'Name Protocol'}</span>
+              <span>Ввод // {mode === 'toName' ? 'Русский' : 'Протокол Имя'}</span>
               <button onClick={handleClear} className="hover:text-[#F27D26] transition-colors">
                 <Trash2 className="w-3 h-3" />
               </button>
@@ -169,12 +178,12 @@ export default function App() {
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={mode === 'toName' ? "Введите текст..." : "Enter encrypted code..."}
+                placeholder={mode === 'toName' ? "Введите текст..." : "Введите зашифрованный код..."}
                 className="w-full h-64 md:h-96 bg-[#0a0a0a] border border-[#333] p-4 font-mono text-sm resize-none focus:outline-none focus:border-[#F27D26] focus:ring-1 focus:ring-[#F27D26] transition-all rounded-sm placeholder:text-gray-800"
                 spellCheck={false}
               />
               <div className="absolute bottom-2 right-2 text-[10px] text-gray-700 font-mono">
-                {input.length} CHARS
+                {input.length} СИМВ
               </div>
             </div>
           </div>
@@ -184,7 +193,7 @@ export default function App() {
             <button 
               onClick={toggleMode}
               className="p-3 rounded-full border border-[#333] hover:border-[#F27D26] hover:text-[#F27D26] hover:bg-[#F27D26]/10 transition-all group"
-              title="Switch Mode"
+              title="Переключить режим"
             >
               <ArrowRightLeft className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
             </button>
@@ -193,22 +202,22 @@ export default function App() {
               onClick={handleTranslate}
               className="bg-[#F27D26] text-black font-bold font-mono text-sm px-6 py-3 rounded-sm hover:bg-[#ff9a57] active:scale-95 transition-all uppercase tracking-wider w-full md:w-auto shadow-[0_0_15px_rgba(242,125,38,0.3)] hover:shadow-[0_0_25px_rgba(242,125,38,0.5)]"
             >
-              {mode === 'toName' ? 'Encrypt' : 'Decrypt'}
+              {mode === 'toName' ? 'Зашифровать' : 'Расшифровать'}
             </button>
           </div>
 
           {/* Output Section */}
           <div className="flex flex-col gap-2">
             <label className="text-xs font-mono text-gray-500 uppercase tracking-wider flex justify-between">
-              <span>Output // {mode === 'toName' ? 'Name Protocol' : 'Russian'}</span>
+              <span>Вывод // {mode === 'toName' ? 'Протокол Имя' : 'Русский'}</span>
               <div className="flex items-center gap-3">
-                <button onClick={handleShare} className="hover:text-[#F27D26] transition-colors flex items-center gap-1" title="Create Shareable Link">
+                <button onClick={handleShare} className="hover:text-[#F27D26] transition-colors flex items-center gap-1" title="Создать ссылку">
                   <Share2 className="w-3 h-3" />
-                  <span className="text-[10px]">SHARE</span>
+                  <span className="text-[10px]">ССЫЛКА</span>
                 </button>
                 <button onClick={handleCopy} className="hover:text-[#F27D26] transition-colors flex items-center gap-1">
                   {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                  {copied && <span className="text-[10px]">COPIED</span>}
+                  {copied && <span className="text-[10px]">СКОПИРОВАНО</span>}
                 </button>
               </div>
             </label>
@@ -223,7 +232,7 @@ export default function App() {
                     {output}
                   </motion.div>
                 ) : (
-                  <span className="text-gray-800 italic opacity-50">Waiting for input stream...</span>
+                  <span className="text-gray-800 italic opacity-50">Ожидание входного потока...</span>
                 )}
               </div>
             </div>
@@ -234,17 +243,17 @@ export default function App() {
         {/* Footer / Instructions */}
         <footer className="border-t border-[#333] pt-6 grid grid-cols-1 md:grid-cols-2 gap-8 text-xs text-gray-500 font-mono">
           <div>
-            <h3 className="text-[#e5e5e5] mb-2 uppercase tracking-wider">Protocol Rules</h3>
+            <h3 className="text-[#e5e5e5] mb-2 uppercase tracking-wider">Правила Протокола</h3>
             <ul className="space-y-1 list-disc list-inside marker:text-[#F27D26]">
-              <li>Words are replaced with random alphanumeric strings (5-12 chars).</li>
-              <li>Punctuation is preserved.</li>
-              <li>Use the <b>SHARE</b> button to generate a link with decryption keys.</li>
-              <li>Without the link, messages cannot be decrypted by others.</li>
+              <li>Слова заменяются случайными кодами (5-12 симв).</li>
+              <li>Пунктуация сохраняется.</li>
+              <li>Используйте кнопку <b>ССЫЛКА</b> для передачи ключей.</li>
+              <li>Без ссылки сообщения невозможно расшифровать.</li>
             </ul>
           </div>
           <div className="text-right flex flex-col justify-end">
-            <p>SESSION ID: {Math.random().toString(36).substring(7).toUpperCase()}</p>
-            <p>ENCRYPTION LEVEL: MAX</p>
+            <p>ID СЕССИИ: {Math.random().toString(36).substring(7).toUpperCase()}</p>
+            <p>УРОВЕНЬ ШИФРОВАНИЯ: МАКС</p>
           </div>
         </footer>
 
