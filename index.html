@@ -2,45 +2,40 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Шифр: Имя</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #050505;
-            --panel: #0a0a0a;
-            --border: #333;
+            --bg: #09090b;
+            --surface: #18181b;
+            --border: #27272a;
             --accent: #F27D26;
-            --accent-dim: rgba(242, 125, 38, 0.1);
-            --text: #e5e5e5;
-            --text-dim: #888;
+            --accent-hover: #ff9a57;
+            --text: #fafafa;
+            --text-muted: #a1a1aa;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
+        body, html {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
             background-color: var(--bg);
             color: var(--text);
             font-family: 'Inter', sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 900px;
+        .app-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            height: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
         }
 
         /* Header */
@@ -48,8 +43,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border);
             padding-bottom: 1.5rem;
+            flex-shrink: 0;
         }
 
         .brand {
@@ -59,425 +54,383 @@
         }
 
         .logo {
-            width: 40px;
-            height: 40px;
-            background-color: var(--accent);
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
-            color: black;
-            font-weight: bold;
+            color: #000;
+            font-weight: 700;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
+            box-shadow: 0 0 20px rgba(242, 125, 38, 0.2);
         }
 
         h1 {
-            margin: 0;
             font-size: 1.5rem;
-            font-family: 'JetBrains Mono', monospace;
-            text-transform: uppercase;
+            font-weight: 600;
             letter-spacing: -0.02em;
         }
 
         .subtitle {
-            margin: 0;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            font-family: 'JetBrains Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+            font-size: 0.875rem;
+            color: var(--text-muted);
         }
 
-        .status-badge {
-            font-size: 0.65rem;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--accent);
-            border: 1px solid var(--accent);
-            padding: 4px 8px;
+        .tg-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(36, 161, 222, 0.1);
+            color: #24A1DE;
+            padding: 0.5rem 1rem;
             border-radius: 99px;
-            animation: pulse 2s infinite;
-            text-transform: uppercase;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid rgba(36, 161, 222, 0.2);
+            transition: all 0.2s;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        .tg-badge:hover {
+            background: rgba(36, 161, 222, 0.2);
         }
 
-        /* Main Grid */
+        /* Main Layout */
         main {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 1rem;
-            align-items: stretch;
+            display: flex;
+            flex: 1;
+            gap: 1.5rem;
+            min-height: 0; /* Crucial for flex children to not overflow */
         }
 
         @media (max-width: 768px) {
             main {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+            .app-wrapper {
+                padding: 1rem;
+            }
+            header {
+                padding-bottom: 1rem;
             }
         }
 
         /* Panels */
         .panel {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .label-row {
+        .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .panel-title {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.75rem;
-            color: var(--text-dim);
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
-        .textarea-wrapper {
+        .panel-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             position: relative;
-            flex-grow: 1;
+            padding: 1.5rem;
         }
 
-        textarea, .output-area {
+        textarea, .output-content {
+            flex: 1;
             width: 100%;
-            height: 300px;
-            background-color: var(--panel);
-            border: 1px solid var(--border);
+            background: transparent;
+            border: none;
             color: var(--text);
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            padding: 1rem;
+            font-size: 1rem;
+            line-height: 1.6;
             resize: none;
-            border-radius: 4px;
             outline: none;
-            transition: border-color 0.2s;
-            line-height: 1.5;
         }
 
-        textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px var(--accent);
-        }
-
-        .output-area {
-            background-color: #0e0e0e;
+        .output-content {
             color: var(--accent);
             overflow-y: auto;
-            white-space: pre-wrap;
             word-break: break-all;
+        }
+
+        textarea::placeholder {
+            color: #52525b;
         }
 
         .char-count {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            font-size: 0.65rem;
+            bottom: 1rem;
+            right: 1.5rem;
             font-family: 'JetBrains Mono', monospace;
-            color: var(--text-dim);
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
 
-        /* Controls */
+        /* Controls (Middle) */
         .controls {
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
             gap: 1rem;
         }
 
         @media (max-width: 768px) {
             .controls {
                 flex-direction: row;
-                padding: 1rem 0;
             }
         }
 
         button {
-            background: transparent;
-            border: none;
             cursor: pointer;
-            color: var(--text);
-            transition: all 0.2s;
+            border: none;
+            background: transparent;
         }
 
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border: 1px solid var(--border);
+        .btn-icon {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s;
         }
 
-        .icon-btn:hover {
+        .btn-icon:hover {
             border-color: var(--accent);
             color: var(--accent);
-            background-color: var(--accent-dim);
         }
 
-        .action-btn {
-            background-color: var(--accent);
-            color: black;
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
             font-family: 'JetBrains Mono', monospace;
-            font-weight: bold;
-            font-size: 0.9rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
+            font-weight: 700;
+            padding: 1rem 2rem;
+            border-radius: 99px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            box-shadow: 0 0 15px rgba(242, 125, 38, 0.3);
+            transition: all 0.2s;
+            box-shadow: 0 4px 20px rgba(242, 125, 38, 0.2);
         }
 
-        .action-btn:hover {
-            background-color: #ff9a57;
-            box-shadow: 0 0 25px rgba(242, 125, 38, 0.5);
-            transform: translateY(-1px);
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(242, 125, 38, 0.3);
         }
 
-        .action-btn:active {
+        .btn-primary:active {
             transform: translateY(0);
         }
 
-        .copy-btn {
-            font-size: 0.65rem;
+        .btn-text {
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
-            gap: 4px;
-            color: var(--text-dim);
+            gap: 0.5rem;
+            transition: color 0.2s;
         }
 
-        .copy-btn:hover {
+        .btn-text:hover {
             color: var(--accent);
-        }
-
-        /* Footer */
-        footer {
-            border-top: 1px solid var(--border);
-            padding-top: 1.5rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-        }
-
-        ul {
-            margin: 0.5rem 0 0 0;
-            padding-left: 1.2rem;
-        }
-
-        li::marker {
-            color: var(--accent);
-        }
-
-        .text-right {
-            text-align: right;
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <header>
-        <div class="brand">
-            <div class="logo">>_</div>
-            <div>
-                <h1>Шифр: Имя</h1>
-                <p class="subtitle">Защищенный Протокол Перевода</p>
+    <div class="app-wrapper">
+        <header>
+            <div class="brand">
+                <div class="logo">Ш</div>
+                <div>
+                    <h1>Шифр: Имя</h1>
+                    <p class="subtitle">Максимальная защита</p>
+                </div>
             </div>
-        </div>
-        <div>
-            <div class="status-badge">Система Активна</div>
-        </div>
-    </header>
+            <a href="#" class="tg-badge" onclick="alert('Для запуска бота добавьте TELEGRAM_BOT_TOKEN в настройки среды (Settings -> Secrets) и перезапустите сервер.')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg>
+                Telegram Бот
+            </a>
+        </header>
 
-    <main>
-        <!-- Input -->
-        <div class="panel">
-            <div class="label-row">
-                <span id="input-label">Ввод // Русский</span>
-                <button class="copy-btn" onclick="clearInput()">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    ОЧИСТИТЬ
+        <main>
+            <!-- Input Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title" id="input-label">Ввод // Русский</span>
+                    <button class="btn-text" onclick="clearInput()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        Очистить
+                    </button>
+                </div>
+                <div class="panel-body">
+                    <textarea id="input-text" placeholder="Введите текст для шифрования..." oninput="updateCount()"></textarea>
+                    <div class="char-count" id="char-count">0 СИМВ</div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn-icon" onclick="toggleMode()" title="Переключить режим">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16"/></svg>
+                </button>
+                <button class="btn-primary" id="action-btn" onclick="processTranslation()">
+                    Зашифровать
                 </button>
             </div>
-            <div class="textarea-wrapper">
-                <textarea id="input-text" placeholder="Введите текст..." oninput="updateCount()"></textarea>
-                <div class="char-count" id="char-count">0 СИМВ</div>
+
+            <!-- Output Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title" id="output-label">Вывод // Зашифровано</span>
+                    <button class="btn-text" id="copy-btn" onclick="copyOutput()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        Копировать
+                    </button>
+                </div>
+                <div class="panel-body">
+                    <div id="output-text" class="output-content"></div>
+                </div>
             </div>
-        </div>
+        </main>
+    </div>
 
-        <!-- Controls -->
-        <div class="controls">
-            <button class="icon-btn" onclick="toggleMode()" title="Переключить режим">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16"/></svg>
-            </button>
-            <button class="action-btn" onclick="processTranslation()" id="action-btn">
-                ЗАШИФРОВАТЬ
-            </button>
-        </div>
+    <script>
+        const cipherMap = {
+            'А': 'x9#', 'Б': '7@z', 'В': 'm$1', 'Г': 'q&2', 'Д': 'w*3', 'Е': 'e(4', 'Ё': 'r)5', 'Ж': 't-6', 'З': 'y+7', 'И': 'u=8',
+            'Й': 'i/9', 'К': 'o?0', 'Л': 'p!a', 'М': 'a@s', 'Н': 's#d', 'О': 'd$f', 'П': 'f%g', 'Р': 'g^h', 'С': 'h&j', 'Т': 'j*k',
+            'У': 'k(l', 'Ф': 'l)z', 'Х': 'z-x', 'Ц': 'x+c', 'Ч': 'c=v', 'Ш': 'v/b', 'Щ': 'b?n', 'Ъ': 'n!m', 'Ы': 'm@q', 'Ь': 'q#w',
+            'Э': 'w$e', 'Ю': 'e%r', 'Я': 'r^t',
+            'а': '1x#', 'б': '2@z', 'в': '3$1', 'г': '4&2', 'д': '5*3', 'е': '6(4', 'ё': '7)5', 'ж': '8-6', 'з': '9+7', 'и': '0=8',
+            'й': 'a/9', 'к': 'b?0', 'л': 'c!a', 'м': 'd@s', 'н': 'e#d', 'о': 'f$f', 'п': 'g%g', 'р': 'h^h', 'с': 'i&j', 'т': 'j*k',
+            'у': 'k(l', 'ф': 'l)z', 'х': 'm-x', 'ц': 'n+c', 'ч': 'o=v', 'ш': 'p/b', 'щ': 'q?n', 'ъ': 'r!m', 'ы': 's@q', 'ь': 't#w',
+            'э': 'u$e', 'ю': 'v%r', 'я': 'w^t',
+            'A': 'A1#', 'B': 'B2@', 'C': 'C3$', 'D': 'D4%', 'E': 'E5^', 'F': 'F6&', 'G': 'G7*', 'H': 'H8(', 'I': 'I9)', 'J': 'J0-',
+            'K': 'K!1', 'L': 'L@2', 'M': 'M#3', 'N': 'N$4', 'O': 'O%5', 'P': 'P^6', 'Q': 'Q&7', 'R': 'R*8', 'S': 'S(9', 'T': 'T)0',
+            'U': 'U-!', 'V': 'V=2', 'W': 'W+3', 'X': 'X/4', 'Y': 'Y?5', 'Z': 'Z>6',
+            'a': 'a1#', 'b': 'b2@', 'c': 'c3$', 'd': 'd4%', 'e': 'e5^', 'f': 'f6&', 'g': 'g7*', 'h': 'h8(', 'i': 'i9)', 'j': 'j0-',
+            'k': 'k!1', 'l': 'l@2', 'm': 'm#3', 'n': 'n$4', 'o': 'o%5', 'p': 'p^6', 'q': 'q&7', 'r': 'r*8', 's': 's(9', 't': 't)0',
+            'u': 'u-!', 'v': 'v=2', 'w': 'w+3', 'x': 'x/4', 'y': 'y?5', 'z': 'z>6',
+            '0': '_0_', '1': '_1_', '2': '_2_', '3': '_3_', '4': '_4_', '5': '_5_', '6': '_6_', '7': '_7_', '8': '_8_', '9': '_9_',
+            ' ': '___', '.': '..!', ',': ',,?', '!': '!!!', '?': '???', '-': '---'
+        };
 
-        <!-- Output -->
-        <div class="panel">
-            <div class="label-row">
-                <span id="output-label">Вывод // Протокол Имя</span>
-                <button class="copy-btn" onclick="copyOutput()" id="copy-btn">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    КОПИРОВАТЬ
-                </button>
-            </div>
-            <div class="textarea-wrapper">
-                <div id="output-text" class="output-area"></div>
-            </div>
-        </div>
-    </main>
+        const reverseMap = {};
+        Object.keys(cipherMap).forEach(key => {
+            reverseMap[cipherMap[key]] = key;
+        });
 
-    <footer>
-        <div class="text-right" style="width: 100%;">
-            <p>ID СЕССИИ: <span id="session-id"></span></p>
-            <p>УРОВЕНЬ ШИФРОВАНИЯ: <span style="color: var(--accent);">МАКСИМАЛЬНЫЙ</span></p>
-        </div>
-    </footer>
-</div>
+        let mode = 'encrypt';
 
-<script>
-    // Session ID
-    document.getElementById('session-id').innerText = Math.random().toString(36).substring(7).toUpperCase();
-
-    // Heavy Cipher Map (3 chars per letter)
-    // Generated to look like noise
-    const cipherMap = {
-        // Cyrillic Upper
-        'А': 'x9#', 'Б': '7@z', 'В': 'm$1', 'Г': 'q&2', 'Д': 'w*3', 'Е': 'e(4', 'Ё': 'r)5', 'Ж': 't-6', 'З': 'y+7', 'И': 'u=8',
-        'Й': 'i/9', 'К': 'o?0', 'Л': 'p!a', 'М': 'a@s', 'Н': 's#d', 'О': 'd$f', 'П': 'f%g', 'Р': 'g^h', 'С': 'h&j', 'Т': 'j*k',
-        'У': 'k(l', 'Ф': 'l)z', 'Х': 'z-x', 'Ц': 'x+c', 'Ч': 'c=v', 'Ш': 'v/b', 'Щ': 'b?n', 'Ъ': 'n!m', 'Ы': 'm@q', 'Ь': 'q#w',
-        'Э': 'w$e', 'Ю': 'e%r', 'Я': 'r^t',
-        
-        // Cyrillic Lower
-        'а': '1x#', 'б': '2@z', 'в': '3$1', 'г': '4&2', 'д': '5*3', 'е': '6(4', 'ё': '7)5', 'ж': '8-6', 'з': '9+7', 'и': '0=8',
-        'й': 'a/9', 'к': 'b?0', 'л': 'c!a', 'м': 'd@s', 'н': 'e#d', 'о': 'f$f', 'п': 'g%g', 'р': 'h^h', 'с': 'i&j', 'т': 'j*k',
-        'у': 'k(l', 'ф': 'l)z', 'х': 'm-x', 'ц': 'n+c', 'ч': 'o=v', 'ш': 'p/b', 'щ': 'q?n', 'ъ': 'r!m', 'ы': 's@q', 'ь': 't#w',
-        'э': 'u$e', 'ю': 'v%r', 'я': 'w^t',
-
-        // Latin Upper
-        'A': 'A1#', 'B': 'B2@', 'C': 'C3$', 'D': 'D4%', 'E': 'E5^', 'F': 'F6&', 'G': 'G7*', 'H': 'H8(', 'I': 'I9)', 'J': 'J0-',
-        'K': 'K!1', 'L': 'L@2', 'M': 'M#3', 'N': 'N$4', 'O': 'O%5', 'P': 'P^6', 'Q': 'Q&7', 'R': 'R*8', 'S': 'S(9', 'T': 'T)0',
-        'U': 'U-!', 'V': 'V=2', 'W': 'W+3', 'X': 'X/4', 'Y': 'Y?5', 'Z': 'Z>6',
-
-        // Latin Lower
-        'a': 'a1#', 'b': 'b2@', 'c': 'c3$', 'd': 'd4%', 'e': 'e5^', 'f': 'f6&', 'g': 'g7*', 'h': 'h8(', 'i': 'i9)', 'j': 'j0-',
-        'k': 'k!1', 'l': 'l@2', 'm': 'm#3', 'n': 'n$4', 'o': 'o%5', 'p': 'p^6', 'q': 'q&7', 'r': 'r*8', 's': 's(9', 't': 't)0',
-        'u': 'u-!', 'v': 'v=2', 'w': 'w+3', 'x': 'x/4', 'y': 'y?5', 'z': 'z>6',
-
-        // Numbers & Symbols
-        '0': '_0_', '1': '_1_', '2': '_2_', '3': '_3_', '4': '_4_', '5': '_5_', '6': '_6_', '7': '_7_', '8': '_8_', '9': '_9_',
-        ' ': '___', '.': '..!', ',': ',,?', '!': '!!!', '?': '???', '-': '---'
-    };
-
-    // Reverse Map for Decryption
-    const reverseMap = {};
-    Object.keys(cipherMap).forEach(key => {
-        reverseMap[cipherMap[key]] = key;
-    });
-
-    let mode = 'encrypt'; // 'encrypt' or 'decrypt'
-
-    function updateCount() {
-        const text = document.getElementById('input-text').value;
-        document.getElementById('char-count').innerText = text.length + ' СИМВ';
-    }
-
-    function clearInput() {
-        document.getElementById('input-text').value = '';
-        document.getElementById('output-text').innerText = '';
-        updateCount();
-    }
-
-    function toggleMode() {
-        mode = mode === 'encrypt' ? 'decrypt' : 'encrypt';
-        
-        // Update UI
-        const inputLabel = document.getElementById('input-label');
-        const outputLabel = document.getElementById('output-label');
-        const actionBtn = document.getElementById('action-btn');
-        const inputPlaceholder = document.getElementById('input-text');
-
-        if (mode === 'encrypt') {
-            inputLabel.innerText = 'Ввод // Русский';
-            outputLabel.innerText = 'Вывод // Протокол Имя';
-            actionBtn.innerText = 'ЗАШИФРОВАТЬ';
-            inputPlaceholder.placeholder = 'Введите текст...';
-        } else {
-            inputLabel.innerText = 'Ввод // Протокол Имя';
-            outputLabel.innerText = 'Вывод // Русский';
-            actionBtn.innerText = 'РАСШИФРОВАТЬ';
-            inputPlaceholder.placeholder = 'Введите зашифрованный код...';
+        function updateCount() {
+            const text = document.getElementById('input-text').value;
+            document.getElementById('char-count').innerText = text.length + ' СИМВ';
         }
 
-        // Swap Content
-        const currentInput = document.getElementById('input-text').value;
-        const currentOutput = document.getElementById('output-text').innerText;
-        
-        if (currentOutput) {
-            document.getElementById('input-text').value = currentOutput;
+        function clearInput() {
+            document.getElementById('input-text').value = '';
             document.getElementById('output-text').innerText = '';
             updateCount();
         }
-    }
 
-    function processTranslation() {
-        const input = document.getElementById('input-text').value;
-        let output = '';
+        function toggleMode() {
+            mode = mode === 'encrypt' ? 'decrypt' : 'encrypt';
+            
+            const inputLabel = document.getElementById('input-label');
+            const outputLabel = document.getElementById('output-label');
+            const actionBtn = document.getElementById('action-btn');
+            const inputPlaceholder = document.getElementById('input-text');
 
-        if (mode === 'encrypt') {
-            // Character by character replacement
-            for (let i = 0; i < input.length; i++) {
-                const char = input[i];
-                // If char is in map, use it. If not, use a default noise block or keep it?
-                // To be "heavy", we should probably keep unknown chars as is or encode them simply.
-                // Let's keep unknown chars as is but maybe surround them? No, just keep as is.
-                output += cipherMap[char] !== undefined ? cipherMap[char] : char;
+            if (mode === 'encrypt') {
+                inputLabel.innerText = 'Ввод // Русский';
+                outputLabel.innerText = 'Вывод // Зашифровано';
+                actionBtn.innerText = 'Зашифровать';
+                inputPlaceholder.placeholder = 'Введите текст для шифрования...';
+            } else {
+                inputLabel.innerText = 'Ввод // Зашифровано';
+                outputLabel.innerText = 'Вывод // Русский';
+                actionBtn.innerText = 'Расшифровать';
+                inputPlaceholder.placeholder = 'Введите код для расшифровки...';
             }
-        } else {
-            // Decryption: Try to consume 3 chars at a time if they match a code
-            let i = 0;
-            while (i < input.length) {
-                // Try to match 3 chars
-                const chunk3 = input.substring(i, i + 3);
-                
-                if (reverseMap[chunk3]) {
-                    output += reverseMap[chunk3];
-                    i += 3;
-                } else {
-                    // If not a 3-char code, maybe it was a character that wasn't encrypted (like a newline or unknown symbol)
-                    output += input[i];
-                    i += 1;
-                }
+
+            const currentInput = document.getElementById('input-text').value;
+            const currentOutput = document.getElementById('output-text').innerText;
+            
+            if (currentOutput) {
+                document.getElementById('input-text').value = currentOutput;
+                document.getElementById('output-text').innerText = '';
+                updateCount();
             }
         }
 
-        document.getElementById('output-text').innerText = output;
-    }
+        function processTranslation() {
+            const input = document.getElementById('input-text').value;
+            let output = '';
 
-    function copyOutput() {
-        const text = document.getElementById('output-text').innerText;
-        if (!text) return;
-        navigator.clipboard.writeText(text);
-        
-        const btn = document.getElementById('copy-btn');
-        const originalHTML = btn.innerHTML;
-        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> СКОПИРОВАНО`;
-        
-        setTimeout(() => {
-            btn.innerHTML = originalHTML;
-        }, 2000);
-    }
-</script>
+            if (mode === 'encrypt') {
+                for (let i = 0; i < input.length; i++) {
+                    const char = input[i];
+                    output += cipherMap[char] !== undefined ? cipherMap[char] : char;
+                }
+            } else {
+                let i = 0;
+                while (i < input.length) {
+                    const chunk3 = input.substring(i, i + 3);
+                    if (reverseMap[chunk3]) {
+                        output += reverseMap[chunk3];
+                        i += 3;
+                    } else {
+                        output += input[i];
+                        i += 1;
+                    }
+                }
+            }
 
+            document.getElementById('output-text').innerText = output;
+        }
+
+        function copyOutput() {
+            const text = document.getElementById('output-text').innerText;
+            if (text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const btn = document.getElementById('copy-btn');
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Скопировано';
+                    btn.style.color = 'var(--accent)';
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.style.color = '';
+                    }, 2000);
+                });
+            }
+        }
+    </script>
 </body>
 </html>
