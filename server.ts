@@ -73,36 +73,12 @@ function decrypt(text: string) {
 }
 
 // --- Telegram Bot ---
-const token = process.env.TELEGRAM_BOT_TOKEN;
+const token = '8444527728:AAFpACJSkk-awqz469dbDEVJ0PjzV-OVb6M';
 if (token) {
     const bot = new TelegramBot(token, { polling: true });
-    const CHANNEL_ID = '@hakos_news';
-    const CHANNEL_LINK = 'https://t.me/hakos_news';
 
     // Store pending text for each user
     const pendingTexts = new Map<number, string>();
-
-    async function checkSubscription(userId: number): Promise<boolean> {
-        try {
-            const chatMember = await bot.getChatMember(CHANNEL_ID, userId);
-            return ['member', 'administrator', 'creator'].includes(chatMember.status);
-        } catch (error) {
-            console.error('Error checking subscription:', error);
-            return false;
-        }
-    }
-
-    function sendSubscriptionMessage(chatId: number) {
-        const opts = {
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: 'Подписаться', url: CHANNEL_LINK }],
-                    [{ text: 'Проверить подписку', callback_data: 'check_sub' }]
-                ]
-            }
-        };
-        bot.sendMessage(chatId, 'Вы не подписаны. Для работы бота подпишитесь на наш канал.', opts);
-    }
 
     bot.on('message', async (msg) => {
         const chatId = msg.chat.id;
@@ -110,13 +86,6 @@ if (token) {
         const text = msg.text;
         
         if (!userId || !text) return;
-
-        // Check subscription first
-        const isSubscribed = await checkSubscription(userId);
-        if (!isSubscribed) {
-            sendSubscriptionMessage(chatId);
-            return;
-        }
 
         if (text === '/start') {
             bot.sendMessage(chatId, "Привет! Я бот-шифратор.\nОтправь мне любой текст, и я предложу зашифровать или расшифровать его.");
@@ -149,28 +118,15 @@ if (token) {
         const messageId = query.message?.message_id;
         if (!chatId || !messageId) return;
 
-        // Always check subscription on callback too
-        const isSubscribed = await checkSubscription(userId);
-        
-        if (query.data === 'check_sub') {
-            if (isSubscribed) {
-                bot.answerCallbackQuery(query.id, { text: 'Подписка подтверждена!' });
-                bot.editMessageText('Спасибо за подписку! Отправьте мне текст для шифрования или расшифровки.', {
-                    chat_id: chatId,
-                    message_id: messageId
-                });
-            } else {
-                bot.answerCallbackQuery(query.id, { text: 'Вы еще не подписались на канал.', show_alert: true });
-            }
-            return;
-        }
-
-        if (!isSubscribed) {
-            bot.answerCallbackQuery(query.id, { text: 'Вы не подписаны на канал!', show_alert: true });
-            return;
-        }
-
         const pendingText = pendingTexts.get(chatId);
+
+        const getDonationText = () => {
+            // 1.7% chance
+            if (Math.random() < 0.017) {
+                return '\n\n☕️ [Поддержать создателя](https://www.donationalerts.com/r/deporook)';
+            }
+            return '';
+        };
 
         if (query.data === 'action_encrypt') {
             if (!pendingText) {
@@ -179,10 +135,11 @@ if (token) {
                 return;
             }
             const encrypted = encrypt(pendingText);
-            bot.editMessageText(`🔒 *Зашифровано:*\n\`${encrypted}\``, {
+            bot.editMessageText(`🔒 *Зашифровано:*\n\`${encrypted}\`${getDonationText()}`, {
                 chat_id: chatId,
                 message_id: messageId,
-                parse_mode: 'Markdown'
+                parse_mode: 'Markdown',
+                disable_web_page_preview: true
             });
             pendingTexts.delete(chatId);
             bot.answerCallbackQuery(query.id);
@@ -194,10 +151,11 @@ if (token) {
                 return;
             }
             const decrypted = decrypt(pendingText);
-            bot.editMessageText(`🔓 *Расшифровано:*\n\`${decrypted}\``, {
+            bot.editMessageText(`🔓 *Расшифровано:*\n\`${decrypted}\`${getDonationText()}`, {
                 chat_id: chatId,
                 message_id: messageId,
-                parse_mode: 'Markdown'
+                parse_mode: 'Markdown',
+                disable_web_page_preview: true
             });
             pendingTexts.delete(chatId);
             bot.answerCallbackQuery(query.id);
