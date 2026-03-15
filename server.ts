@@ -76,27 +76,142 @@ function decrypt(text: string) {
 const token = process.env.TELEGRAM_BOT_TOKEN;
 if (token) {
     const bot = new TelegramBot(token, { polling: true });
+    const CHANNEL_ID = '@hakos_news';
+    const CHANNEL_LINK = 'https://t.me/hakos_news';
 
-    bot.onText(/\/start/, (msg) => {
-        bot.sendMessage(msg.chat.id, "Привет! Я бот-шифратор 'Имя'.\nПросто отправь мне любой текст, и я выдам тебе зашифрованную и расшифрованную версии.");
-    });
+    // Store pending text for each user
+    const pendingTexts = new Map<number, string>();
 
-    bot.on('message', (msg) => {
-        if (msg.text === '/start') return;
+    async function checkSubscription(userId: number): Promise<boolean> {
+        try {
+            const chatMember = await bot.getChatMember(CHANNEL_ID, userId);
+            return ['member', 'administrator', 'creator'].includes(chatMember.status);
+        } catch (error) {
+            console.error('Error checking subscription:', error);
+            return false;
+        }
+    }
+
+    function sendSubscriptionMessage(chatId: number) {
+        const opts = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: 'Подписаться', url: CHANNEL_LINK }],
+                    [{ text: 'Проверить подписку', callback_data: 'check_sub' }]
+                ]
+            }
+        };
+        bot.sendMessage(chatId, 'Вы не подписаны. Для работы бота подпишитесь на наш канал.', opts);
+    }
+
+    bot.on('message', async (msg) => {
+        const chatId = msg.chat.id;
+        const userId = msg.from?.id;
         const text = msg.text;
-        if (!text) return;
-
-        const encrypted = encrypt(text);
-        const decrypted = decrypt(text);
-
-        let reply = `🔒 *Зашифровано:*\n\`${encrypted}\``;
         
-        if (decrypted !== text) {
-            reply += `\n\n🔓 *Расшифровано:*\n\`${decrypted}\``;
+        if (!userId || !text) return;
+
+        // Check subscription first
+        const isSubscribed = await checkSubscription(userId);
+        if (!isSubscribed) {
+            sendSubscriptionMessage(chatId);
+            return;
         }
 
-        bot.sendMessage(msg.chat.id, reply, { parse_mode: 'Markdown' });
+        if (text === '/start') {
+            bot.sendMessage(chatId, "Привет! Я бот-шифратор.\nОтправь мне любой текст, и я предложу зашифровать или расшифровать его.");
+            return;
+        }
+
+        // Save the text and ask what to do
+        pendingTexts.set(chatId, text);
+        
+        const opts = {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        { text: '🔒 Зашифровать', callback_data: 'action_encrypt' },
+                        { text: '🔓 Расшифровать', callback_data: 'action_decrypt' }
+                    ],
+                    [
+                        { text: '❌ Назад', callback_data: 'action_cancel' }
+                    ]
+                ]
+            }
+        };
+        
+        bot.sendMessage(chatId, 'Что сделать с этим текстом?', opts);
     });
+
+    bot.on('callback_query', async (query) => {
+        const userId = query.from.id;
+        const chatId = query.message?.chat.id;
+        const messageId = query.message?.message_id;
+        if (!chatId || !messageId) return;
+
+        // Always check subscription on callback too
+        const isSubscribed = await checkSubscription(userId);
+        
+        if (query.data === 'check_sub') {
+            if (isSubscribed) {
+                bot.answerCallbackQuery(query.id, { text: 'Подписка подтверждена!' });
+                bot.editMessageText('Спасибо за подписку! Отправьте мне текст для шифрования или расшифровки.', {
+                    chat_id: chatId,
+                    message_id: messageId
+                });
+            } else {
+                bot.answerCallbackQuery(query.id, { text: 'Вы еще не подписались на канал.', show_alert: true });
+            }
+            return;
+        }
+
+        if (!isSubscribed) {
+            bot.answerCallbackQuery(query.id, { text: 'Вы не подписаны на канал!', show_alert: true });
+            return;
+        }
+
+        const pendingText = pendingTexts.get(chatId);
+
+        if (query.data === 'action_encrypt') {
+            if (!pendingText) {
+                bot.answerCallbackQuery(query.id, { text: 'Текст не найден. Отправьте заново.' });
+                bot.deleteMessage(chatId, messageId).catch(() => {});
+                return;
+            }
+            const encrypted = encrypt(pendingText);
+            bot.editMessageText(`🔒 *Зашифровано:*\n\`${encrypted}\``, {
+                chat_id: chatId,
+                message_id: messageId,
+                parse_mode: 'Markdown'
+            });
+            pendingTexts.delete(chatId);
+            bot.answerCallbackQuery(query.id);
+        } 
+        else if (query.data === 'action_decrypt') {
+            if (!pendingText) {
+                bot.answerCallbackQuery(query.id, { text: 'Текст не найден. Отправьте заново.' });
+                bot.deleteMessage(chatId, messageId).catch(() => {});
+                return;
+            }
+            const decrypted = decrypt(pendingText);
+            bot.editMessageText(`🔓 *Расшифровано:*\n\`${decrypted}\``, {
+                chat_id: chatId,
+                message_id: messageId,
+                parse_mode: 'Markdown'
+            });
+            pendingTexts.delete(chatId);
+            bot.answerCallbackQuery(query.id);
+        }
+        else if (query.data === 'action_cancel') {
+            bot.editMessageText('Действие отменено.', {
+                chat_id: chatId,
+                message_id: messageId
+            });
+            pendingTexts.delete(chatId);
+            bot.answerCallbackQuery(query.id);
+        }
+    });
+
     console.log('Telegram bot is running...');
 } else {
     console.log('TELEGRAM_BOT_TOKEN is not set. Bot is disabled.');
